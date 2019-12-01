@@ -1,42 +1,47 @@
 import json
+import pandas as pd
+from joblib import load
 
-# import requests
+
+def map_data_from_query(event):
+    data = {
+        "district": event["queryStringParameters"]["district"],
+        "specialty": event["queryStringParameters"]["specialty"],
+        "points": event["queryStringParameters"]["points"],
+        "kind": event["queryStringParameters"]["kind"],
+    }
+    data["specialty"] = int(data["specialty"][:3])
+    data["points"] = float(data["points"])
+    return data
+
+
+def get_positive_prediction(data, estimator):
+    df = pd.DataFrame([[data["district"], data["specialty"], data["points"]]])
+    return estimator.predict_proba(df.values)[0][1]
 
 
 def lambda_handler(event, context):
-    """Sample pure Lambda function
+    budget = load("budget_after_greed_search.joblib")
+    contract = load("contract_after_greed_search.joblib")
 
-    Parameters
-    ----------
-    event: dict, required
-        API Gateway Lambda Proxy Input Format
+    data = map_data_from_query(event)
+    if data["kind"] == "budget":
+        estimator = budget
+    else:
+        estimator = contract
 
-        Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
-
-    context: object, required
-        Lambda Context runtime methods and attributes
-
-        Context doc: https://docs.aws.amazon.com/lambda/latest/dg/python-context-object.html
-
-    Returns
-    ------
-    API Gateway Lambda Proxy Output Format: dict
-
-        Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
-    """
-
-    # try:
-    #     ip = requests.get("http://checkip.amazonaws.com/")
-    # except requests.RequestException as e:
-    #     # Send some context about this error to Lambda Logs
-    #     print(e)
-
-    #     raise e
+    prediction = get_positive_prediction(data, estimator)
 
     return {
         "statusCode": 200,
-        "body": json.dumps({
-            "message": "hello world",
-            # "location": ip.text.replace("\n", "")
-        }),
+        "body": json.dumps({"prediction": prediction}),
+        "headers": {
+            "Access-Control-Allow-Headers": (
+                "Content-Type,X-Amz-Date,Authorization,"
+                "X-Api-Key,X-Amz-Security-Token,"
+                "Access-Control-Allow-Origin"
+            ),
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET,POST,OPTIONS,HEAD",
+        },
     }
