@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  abit_helper_model_lambda
+
+  Sample SAM Template for abit_helper_model_lambda
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  AbitHelperModelHandler:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: app/
+      Handler: app.lambda_handler
+      Runtime: python3.7
+
+Outputs:
+  AbitHelperModelHandler:
+    Description: "Handler for ml of abit helper"
+    Value: !GetAtt AbitHelperModelHandler.Arn
+  AbitHelperModelHandlerIamRole:
+    Description: "Implicit IAM Role created for abit helper handler"
+    Value: !GetAtt AbitHelperModelHandlerRole.Arn
