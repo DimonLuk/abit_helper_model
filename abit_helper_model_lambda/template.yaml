@@ -9,6 +9,7 @@ Description: >
 Globals:
   Function:
     Timeout: 60
+    MemorySize: 256
 
 Resources:
   AbitHelperModelHandler:
@@ -17,11 +18,15 @@ Resources:
       CodeUri: app/
       Handler: app.lambda_handler
       Runtime: python3.7
+      Role: arn:aws:iam::008410841266:role/AbitHelperLambdaRole
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0ff1ef0780abbc751
+        SubnetIds: 
+          - subnet-09e8c78d9a0dee373
+          - subnet-06adede03ba4309ea
 
 Outputs:
   AbitHelperModelHandler:
     Description: "Handler for ml of abit helper"
     Value: !GetAtt AbitHelperModelHandler.Arn
-  AbitHelperModelHandlerIamRole:
-    Description: "Implicit IAM Role created for abit helper handler"
-    Value: !GetAtt AbitHelperModelHandlerRole.Arn
