@@ -1,0 +1,8 @@
+{
+  "queryStringParameters": {
+    "district": "м. Київ",
+    "specialty": "121 adasdada",
+    "points": 200,
+    "kind": "budget"
+  }
+}

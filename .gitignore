@@ -4,3 +4,6 @@ tags
 __pycache__/
 *.csv
 *.joblib
+.env_dir/
+-/
+bin/
