@@ -9,6 +9,7 @@ def map_data_from_query(event):
         "specialty": event["queryStringParameters"]["specialty"],
         "points": event["queryStringParameters"]["points"],
         "kind": event["queryStringParameters"]["kind"],
+        "university": event["queryStringParameters"]["university"],
     }
     data["specialty"] = int(data["specialty"][:3])
     data["points"] = float(data["points"])
@@ -16,7 +17,9 @@ def map_data_from_query(event):
 
 
 def get_positive_prediction(data, estimator):
-    df = pd.DataFrame([[data["district"], data["specialty"], data["points"]]])
+    df = pd.DataFrame(
+        [[data["district"], data["university"], data["specialty"], data["points"]]]
+    )
     return estimator.predict_proba(df.values)[0][1]
 
 
